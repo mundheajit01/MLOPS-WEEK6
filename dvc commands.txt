@@ -1,0 +1,36 @@
+mkdir week2ga
+cd week2ga
+git init
+git clone https://github.com/mundheajit01/MLOPS
+cd MLOPS
+rm -r data
+python -m venv .env
+source .env/bin/activate
+pip install -r requirenments.txt
+pip install dvc
+
+dvc init
+
+dvc get https://github.com/IITMBSMLOps/ga_resources data/v1/data.csv --rev d26b9c73 --out data/data.csv
+dvc add data
+
+sed -i 's@data/iris.csv@data/data.csv@g' app.py
+
+
+git add data.dvc .gitignore
+git config --global user.email mundheajit01@gmail.com
+git config --global user.name "mundheajit"
+git commit -m 'first model with v1 data'
+git tag -a 'v1' -m 'v1 data of iris'
+
+dvc get https://github.com/IITMBSMLOps/ga_resources data/v2/data.csv --rev d26b9c73 --out data/data2.csv
+
+mv data/data2.csv data/data.csv
+git add data.dvc
+git commit -m 'v2 data used'
+git tag -a 'v2' -m 'v2 data used'
+
+git checkout v1.0
+dvc checkout
+
+git checkout v1 data.dvc
